@@ -46,8 +46,7 @@ defmodule GitHubPixelArt do
     drawing
     |> drawing_to_commit_dates(init_date)
     |> IO.inspect(limit: :infinity)
-
-    # |> Enum.each(&git_commit/1)
+    |> Enum.each(&git_commit/1)
 
     # 4. Congrats!
     IO.puts("Commits created! Check them with `git log` and manually push them to GitHub.")
@@ -176,13 +175,13 @@ end
 #   XXXXXXX
 
 drawing = [
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end),
-  Enum.map(1..181, fn x -> :rand.uniform(3) end)
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end),
+  Enum.map(1..52, fn x -> :rand.uniform(3) end)
 ]
 
 # drawing = [
@@ -196,4 +195,4 @@ drawing = [
 # ]
 
 # GitHubPixelArt.draw_in_github(drawing, ~D[2024-08-18], ~D[2024-08-24])
-GitHubPixelArt.draw_in_github(drawing, ~D[2022-01-02], ~D[2025-06-21])
+GitHubPixelArt.draw_in_github(drawing, ~D[2022-01-02], ~D[2022-12-31])
