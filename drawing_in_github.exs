@@ -184,15 +184,5 @@ drawing = [
   Enum.map(1..52, fn x -> :rand.uniform(8) end)
 ]
 
-# drawing = [
-#   [5, 0],
-#   [0, 2],
-#   [0, 0],
-#   [0, 0],
-#   [0, 0],
-#   [0, 0],
-#   [0, 0],
-# ]
-
 # GitHubPixelArt.draw_in_github(drawing, ~D[2024-08-18], ~D[2024-08-24])
 GitHubPixelArt.draw_in_github(drawing, ~D[2023-01-01], ~D[2023-12-30])
