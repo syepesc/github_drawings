@@ -37,7 +37,7 @@ defmodule GitHubPixelArt do
     are_drawing_values_between_zero_to_fifteen?(drawing)
 
     # 2. Ask user if the drawing is correct
-    # draw_in_console(drawing)
+    draw_in_console(drawing)
     IO.puts("Does it look like what you are expecting to se in GitHub heatmap?")
     IO.puts("Press 'y' to create the commits for your drawing or any other key to abort.")
     if IO.gets("> ") |> String.trim() != "y", do: raise("Aborted")
@@ -45,7 +45,6 @@ defmodule GitHubPixelArt do
     # 3. Create commits
     drawing
     |> drawing_to_commit_dates(init_date)
-    |> IO.inspect(limit: :infinity)
     |> Enum.each(&git_commit/1)
 
     # 4. Congrats!
@@ -175,13 +174,13 @@ end
 #   XXXXXXX
 
 drawing = [
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end),
-  Enum.map(1..25, fn x -> :rand.uniform(3) end)
+  [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+  [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+  [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
 ]
 
-GitHubPixelArt.draw_in_github(drawing, ~D[2024-12-29], ~D[2025-06-21])
+GitHubPixelArt.draw_in_github(drawing, ~D[2024-07-07], ~D[2024-09-21])
