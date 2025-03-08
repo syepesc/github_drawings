@@ -3,49 +3,90 @@ defmodule GitHubPixelArt do
   GitHub commit heatmap is represented with 7 rows as the days of the week,
   and columns for the weeks in a year. As follows:
 
-                Jan             Dec
-  Sunday      [1][8][][][] ... [][][][][]
-  Monday      [2][9][][][] ... [][][][][]
-  Tuesday     [3][.][][][] ... [][][][][]
-  Wednesday   [4][.][][][] ... [][][][][]
-  Thursday    [5][.][][][] ... [][][][][]
-  Friday      [6][.][][][] ... [][][][][]
-  Saturday    [7][.][][][] ... [][][][][]
+  ```
+              Jan xxxx ... n-month
+              w1 w2 w3     wn
+  Sunday      [] [] [] ... []
+  Monday      [] [] [] ... []
+  Tuesday     [] [] [] ... []
+  Wednesday   [] [] [] ... []
+  Thursday    [] [] [] ... []
+  Friday      [] [] [] ... []
+  Saturday    [] [] [] ... []
+  ```
 
-  Your drawing must be represented as a matrix of, a list of lists.
-  Each element in a row (inner list) represent the same day of the week in different weeks.
-  e.i.
-  [
-     w1 w2 w3 w4 w5
-    [1, 0, 1, 0, 1],  # Sunday
-    [1, 1, 1, 0, 1],  # Monday
-    [1, 0, 1, 0, 1]   # Tuesday
-  ]
+  Your drawing must be represented as a matrix of a list of lists. With the following rules:
+    - `drawing`   - Must be a list of lists with 7 rows and each row must have the same length.
+                    Each element of the matrix must be either a 1 or a 0. A value of
+                    1 represents a filled cell, while a value of 0 represents an empty cell.
+    - `init_date` - Must be a sunday that represents the top-left corner of the drawing.
+    - `end_date`  - Must be a saturday that represents the bottom-right corner of the drawing.
 
-  Each cell in the drawing must be filled with either a 1 or a 0.
-  A value of 1 represents a filled cell (commit), while a value of 0 represents an empty cell.
-
-  Ideally, you should draw in the past, so make sure your GitHub history has some empty spaces.
+  Ideally, you should draw in the past (not sure if you can in the future),
+  so, make sure your GitHub history has some empty spaces.
   """
   @spec draw_in_github(drawing :: [], init_date :: Date.t(), end_date :: Date.t()) :: :ok
   def draw_in_github(drawing, %Date{} = init_date, %Date{} = end_date) do
     # 1. Validations
-    init_date_is_less_or_equal_than_end_date?(init_date, end_date)
+    is_init_date_a_sunday?(init_date)
+    is_end_date_a_saturday?(end_date)
+    is_init_date_less_than_end_date?(init_date, end_date)
+    does_drawing_have_seven_rows?(drawing)
+    drawing_rows_have_same_length?(drawing)
+    are_drawing_values_zeros_and_ones?(drawing)
 
     # 2. Ask user if the drawing is correct
     draw_in_console(drawing)
-    IO.puts("Does it look like what you are expecting?")
+    IO.puts("Does it look like what you are expecting to se in GitHub heatmap?")
     IO.puts("Press 'y' to create the commits for your drawing or any other key to abort.")
     if IO.gets("> ") |> String.trim() != "y", do: raise("Aborted")
 
     # 3. Create commits
+    drawing
+    |> drawing_to_commit_dates(init_date)
+    |> Enum.each(&git_commit/1)
+    |> IO.inspect()
+
     # dates = list_dates(init_date, end_date)
     # Enum.zip(List.flatten(drawing), dates) |> IO.inspect(limit: :infinity)
 
     # 4. Congrats!
-    # IO.puts("Commits created! Check them with `git log` and manually push them to GitHub.")
+    IO.puts("Commits created! Check them with `git log` and manually push them to GitHub.")
 
     :ok
+  end
+
+  @doc """
+  Since each value of a row is one week after the previous one,
+  we can add the week to the initial date to get the current date.
+  Then, we add the day to the current date to get the final date.
+
+  Basically were are doing the following:
+
+  ```
+  init_date    +0 +7 +14 ... +7n
+            +0 [] []  [] ... []
+            +1 [] []  [] ... []
+            +2 [] []  [] ... []
+            +3 [] []  [] ... []
+            +4 [] []  [] ... []
+            +5 [] []  [] ... []
+            +n [] []  [] ... []
+  ```
+
+  """
+  def drawing_to_commit_dates(drawing, init_date) do
+    drawing
+    |> Enum.with_index()
+    |> Enum.map(fn {row, week} ->
+      row
+      |> Enum.with_index()
+      |> Enum.map(fn {value, day} ->
+        if value == 1, do: Date.add(Date.add(init_date, week), day * 7)
+      end)
+    end)
+    |> List.flatten()
+    |> Enum.filter(fn d -> not is_nil(d) end)
   end
 
   def draw_in_console(drawing) do
@@ -58,19 +99,57 @@ defmodule GitHubPixelArt do
     end
   end
 
-  defp init_date_is_less_or_equal_than_end_date?(init_date, end_date) do
-    if Date.compare(init_date, end_date) not in [:lt, :eq],
-      do: raise("The initial date must be less or equal to the end date.")
+  defp is_init_date_a_sunday?(init_date) do
+    Date.day_of_week(init_date) == 7
   end
 
-  defp list_dates(init_date, end_date) do
-    Date.range(init_date, end_date) |> Enum.to_list()
+  defp is_end_date_a_saturday?(init_date) do
+    Date.day_of_week(init_date) == 6
+  end
+
+  defp is_init_date_less_than_end_date?(init_date, end_date) do
+    if Date.compare(init_date, end_date) != :lt do
+      raise("The initial date must be less than end date.")
+    end
+  end
+
+  defp does_drawing_have_seven_rows?(drawing) do
+    if Enum.count(drawing) != 7, do: raise("The drawing must have 7 rows.")
+  end
+
+  defp drawing_rows_have_same_length?([head | tail] = _drawing) do
+    length = length(head)
+
+    if not Enum.all?(tail, fn row -> length(row) == length end) do
+      raise("Every row must have the same number of cells.")
+    end
+  end
+
+  defp are_drawing_values_zeros_and_ones?(drawing) do
+    drawing
+    |> List.flatten()
+    |> Enum.each(fn x ->
+      if x not in [0, 1], do: raise("The drawing must have only 0 and 1 values.")
+    end)
+  end
+
+  def git_commit(%Date{} = date) do
+    iso_date = Date.to_iso8601(date)
+    message = "Draw a pixel on: #{iso_date}"
+
+    # 1. Edit temp file
+    File.write!("tmp_commit_file.txt", message)
+    File.close("tmp_commit_file.txt")
+
+    # 2. Create commits
+    IO.puts("git add .")
+    IO.puts("GIT_COMMITTER_DATE='#{iso_date}' git commit --date '#{iso_date}' -m '#{message}'")
   end
 end
 
 # The following drawing represent a boat:
 #
-#    XXX
+#   XXX
 #    XXX
 #      X
 #      X
@@ -78,21 +157,14 @@ end
 #  X       X
 #   XXXXXXX
 
-# drawing = [
-#   [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-#   [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-#   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-#   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-#   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-#   [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-#   [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
-# ]
+drawing = [
+  [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+  [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
+]
 
-# GitHubPixelArt.draw_in_github(drawing, ~D[2024-03-24], ~D[2024-06-08])
-
-# drawing = [
-#   [0, 1],
-#   [0]
-# ]
-
-# GitHubPixelArt.draw_in_console(drawing)
+GitHubPixelArt.draw_in_github(drawing, ~D[2024-03-24], ~D[2024-06-08])
