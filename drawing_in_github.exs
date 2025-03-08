@@ -46,12 +46,8 @@ defmodule GitHubPixelArt do
     |> drawing_to_commit_dates(init_date)
     |> Enum.each(&git_commit/1)
 
-    # dates = list_dates(init_date, end_date)
-    # Enum.zip(List.flatten(drawing), dates) |> IO.inspect(limit: :infinity)
-
     # 4. Congrats!
     IO.puts("Commits created! Check them with `git log` and manually push them to GitHub.")
-
     :ok
   end
 
@@ -72,7 +68,6 @@ defmodule GitHubPixelArt do
             +5 [] []  [] ... []
             +n [] []  [] ... []
   ```
-
   """
   def drawing_to_commit_dates(drawing, init_date) do
     drawing
@@ -132,7 +127,7 @@ defmodule GitHubPixelArt do
     end)
   end
 
-  def git_commit(%Date{} = date) do
+  defp git_commit(%Date{} = date) do
     iso_date = Date.to_iso8601(date)
     iso_datetime = iso_date <> "T12:00:00Z"
     message = "Draw a pixel on: #{iso_date}"
@@ -160,14 +155,14 @@ end
 #  X       X
 #   XXXXXXX
 
-drawing = [
-  [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
-]
+# drawing = [
+#   [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+#   [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+#   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+#   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+#   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+#   [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+#   [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
+# ]
 
-GitHubPixelArt.draw_in_github(drawing, ~D[2024-03-24], ~D[2024-06-08])
+# GitHubPixelArt.draw_in_github(drawing, ~D[2024-03-24], ~D[2024-06-08])
