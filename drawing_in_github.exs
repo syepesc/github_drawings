@@ -45,7 +45,6 @@ defmodule GitHubPixelArt do
     drawing
     |> drawing_to_commit_dates(init_date)
     |> Enum.each(&git_commit/1)
-    |> IO.inspect()
 
     # dates = list_dates(init_date, end_date)
     # Enum.zip(List.flatten(drawing), dates) |> IO.inspect(limit: :infinity)
@@ -135,6 +134,7 @@ defmodule GitHubPixelArt do
 
   def git_commit(%Date{} = date) do
     iso_date = Date.to_iso8601(date)
+    iso_datetime = iso_date <> "T12:00:00Z"
     message = "Draw a pixel on: #{iso_date}"
 
     # 1. Edit temp file
@@ -142,8 +142,11 @@ defmodule GitHubPixelArt do
     File.close("tmp_commit_file.txt")
 
     # 2. Create commits
-    IO.puts("git add .")
-    IO.puts("GIT_COMMITTER_DATE='#{iso_date}' git commit --date '#{iso_date}' -m '#{message}'")
+    System.cmd("git", ["add", "."])
+
+    System.cmd("git", ["commit", "--date", iso_datetime, "-m", message],
+      env: [{"GIT_COMMITTER_DATE", iso_datetime}]
+    )
   end
 end
 
