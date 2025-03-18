@@ -94,11 +94,15 @@ defmodule GitHubPixelArt do
   end
 
   defp is_init_date_a_sunday?(init_date) do
-    Date.day_of_week(init_date) == 7
+    if Date.day_of_week(init_date) == 7 do
+      raise("The initial date must be a Sunday.")
+    end
   end
 
   defp is_end_date_a_saturday?(init_date) do
-    Date.day_of_week(init_date) == 6
+    if Date.day_of_week(init_date) == 6 do
+      raise("The end date must be a Saturday.")
+    end
   end
 
   defp is_init_date_less_than_end_date?(init_date, end_date) do
@@ -108,7 +112,9 @@ defmodule GitHubPixelArt do
   end
 
   defp does_drawing_have_seven_rows?(drawing) do
-    if Enum.count(drawing) != 7, do: raise("The drawing must have 7 rows.")
+    if Enum.count(drawing) != 7 do
+      raise("The drawing must have 7 rows.")
+    end
   end
 
   defp drawing_rows_have_same_length?([head | tail] = _drawing) do
