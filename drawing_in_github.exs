@@ -94,13 +94,13 @@ defmodule GitHubPixelArt do
   end
 
   defp is_init_date_a_sunday?(init_date) do
-    if Date.day_of_week(init_date) == 7 do
+    if Date.day_of_week(init_date) != 7 do
       raise("The initial date must be a Sunday.")
     end
   end
 
   defp is_end_date_a_saturday?(init_date) do
-    if Date.day_of_week(init_date) == 6 do
+    if Date.day_of_week(init_date) != 6 do
       raise("The end date must be a Saturday.")
     end
   end
