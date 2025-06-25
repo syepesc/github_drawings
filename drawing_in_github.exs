@@ -175,13 +175,13 @@ end
 #   XXXXXXX
 
 drawing = [
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end),
-  Enum.map(1..52, fn x -> :rand.uniform(3) end)
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end),
+  Enum.map(1..25, fn x -> :rand.uniform(3) end)
 ]
 
-GitHubPixelArt.draw_in_github(drawing, ~D[2023-12-31], ~D[2024-12-28])
+GitHubPixelArt.draw_in_github(drawing, ~D[2024-12-29], ~D[2025-06-21])
