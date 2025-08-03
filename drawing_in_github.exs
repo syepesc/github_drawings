@@ -174,13 +174,13 @@ end
 #   XXXXXXX
 
 drawing = [
-  [1, 2, 3],
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 2, 1]
+  [2, 3],
+  [1, 4],
+  [0, 2],
+  [5, 0],
+  [3, 0],
+  [2, 0],
+  [1, 0]
 ]
 
-GitHubPixelArt.draw_in_github(drawing, ~D[2025-07-13], ~D[2025-08-02])
+GitHubPixelArt.draw_in_github(drawing, ~D[2025-08-03], ~D[2025-08-16])
